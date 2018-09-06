@@ -14,7 +14,7 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     var posts: [[String: Any]] = []
-    
+    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +23,14 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.rowHeight = 200
         
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(PhotosViewController.didPullToRefresh(_:)), for: UIControlEvents.valueChanged)
+        tableView.insertSubview(refreshControl, at: 0)
+        
+        fetchPhoto()
+    }
+    
+    @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
         fetchPhoto()
     }
     
@@ -45,6 +53,7 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
                 
                 // TODO: Reload the table view
                 self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
             }
         }
         task.resume()
